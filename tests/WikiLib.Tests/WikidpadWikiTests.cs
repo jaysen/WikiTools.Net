@@ -86,8 +86,8 @@ namespace WikiLib.Tests
             var pageList = sut.GetAllPages();
 
             //assert
-            Assert.Equal(expected, pageList[0].GetPageContent());
-            Assert.Equal(expected2, pageList[1].GetPageContent());
+            Assert.Equal(expected, pageList[0].GetContent());
+            Assert.Equal(expected2, pageList[1].GetContent());
 
             Assert.True(pageList[0].ContentIsStale);            
             Assert.True(pageList[1].ContentIsStale);

@@ -27,5 +27,10 @@ namespace WikiLib
         {
             throw new System.NotImplementedException();
         }
+
+        public override List<string> GetHeaders()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

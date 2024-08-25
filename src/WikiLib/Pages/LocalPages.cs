@@ -20,7 +20,7 @@ namespace WikiLib
             Name = Path.GetFileNameWithoutExtension(path);
         }
 
-        public override string GetPageContent()
+        public override string GetContent()
         {
             _contents = File.ReadAllText(PagePath);
             ContentIsStale = true;
@@ -31,7 +31,7 @@ namespace WikiLib
         {
             if (ContentIsStale)
             {
-                GetPageContent();
+                GetContent();
             }
             return _contents.Contains(searchStr);
         }

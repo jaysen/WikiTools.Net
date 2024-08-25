@@ -14,11 +14,13 @@ namespace WikiLib
             Name = name;
         }
 
+        public abstract List<string> GetHeaders();
+        public abstract string GetContent();
+
         public abstract List<string> GetLinks();
         public abstract List<string> GetAliases();
         public abstract List<string> GetTags();
 
-        public abstract string GetPageContent();
 
         public abstract bool ContainsText(string searchStr);
 
