@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace WikiTool.Core;
+namespace WikiTools.Core;
 
 public abstract class Wiki
 {

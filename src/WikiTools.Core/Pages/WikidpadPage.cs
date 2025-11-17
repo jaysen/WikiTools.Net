@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace WikiTool.Core;
+namespace WikiTools.Core;
 
 public class WikidpadPage : LocalPage
 {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace WikiTool.Core;
+namespace WikiTools.Core;
 
 public class WikidpadWiki : LocalWiki
 {

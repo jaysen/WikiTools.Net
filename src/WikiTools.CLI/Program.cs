@@ -1,12 +1,12 @@
 ﻿using System;
 
-namespace WikiTool.CLI
+namespace WikiTools.CLI
 {
     class Program
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("WikiTool.CLI - .NET 9.0");
+            Console.WriteLine("WikiTools.CLI - .NET 9.0");
         }
     }
 }

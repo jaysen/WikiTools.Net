@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace WikiTool.Core;
+namespace WikiTools.Core;
 
 public abstract class LocalWiki : Wiki
 {

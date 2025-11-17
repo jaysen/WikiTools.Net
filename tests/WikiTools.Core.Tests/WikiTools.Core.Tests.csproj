@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\WikiTool.Core\WikiTool.Core.csproj" />
+    <ProjectReference Include="..\..\src\WikiTools.Core\WikiTools.Core.csproj" />
   </ItemGroup>
 
 </Project>
