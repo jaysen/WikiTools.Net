@@ -133,14 +133,14 @@ public class WikidPadToObsidianConverter
     /// </summary>
     private string ConvertTags(string content)
     {
-        // Convert [tag:tagname] to #tagname
+        // Convert [tag:tagname] to #tagname with space after
         var tagPattern = @"\[tag:([^\]]+)\]";
         content = Regex.Replace(content, tagPattern, match =>
         {
             var tagName = match.Groups[1].Value.Trim();
             // Replace spaces in tag names with hyphens for Obsidian compatibility
             tagName = tagName.Replace(" ", "-");
-            return $"#{tagName}";
+            return $"#{tagName} ";
         });
 
         // Convert CategoryTagName to #TagName
@@ -150,6 +150,11 @@ public class WikidPadToObsidianConverter
             var tagName = match.Groups[1].Value;
             return $"#{tagName}";
         });
+
+        // Clean up any double spaces or trailing spaces at end of lines
+        content = Regex.Replace(content, @" +", " "); // Replace multiple spaces with single space
+        content = Regex.Replace(content, @" +(\r?\n)", "$1"); // Remove trailing spaces before newlines
+        content = Regex.Replace(content, @" +$", ""); // Remove trailing spaces at end of content
 
         return content;
     }

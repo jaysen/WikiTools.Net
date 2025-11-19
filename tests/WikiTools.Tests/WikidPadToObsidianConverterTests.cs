@@ -91,6 +91,23 @@ public class WikidPadToObsidianConverterTests
     }
 
     [Fact]
+    public void ConvertTags_MultipleAdjacentTags_HasSpacesBetweenHashtags()
+    {
+        // Arrange
+        var content = "start [tag:one][tag:two]CategoryThree [tag:four] and continue";
+        var converter = CreateConverter();
+
+        // Act
+        var result = converter.ConvertContent(content);
+
+        // Assert
+        Assert.Equal("start #one #two #Three #four and continue", result);
+        Assert.DoesNotContain("#one#two", result);
+        Assert.DoesNotContain("#two#Three", result);
+        Assert.DoesNotContain("#Three#four", result);
+    }
+
+    [Fact]
     public void ConvertLinks_BareCamelCase_ToDoubleSquareBrackets()
     {
         // Arrange
