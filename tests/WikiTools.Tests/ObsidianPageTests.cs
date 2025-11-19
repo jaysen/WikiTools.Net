@@ -7,11 +7,11 @@ namespace WikiTools.Tests;
 
 public class ObsidianPageTests
 {
-    private static string _testFolder;
+    private readonly string _testFolder;
 
     public ObsidianPageTests()
     {
-        _testFolder = TestUtilities.SetTestFolder();
+        _testFolder = TestUtilities.GetTestFolder("obsidian_page_tests");
     }
 
     [Fact]
@@ -28,7 +28,7 @@ public class ObsidianPageTests
     public void Constructor_ThrowsIfWrongExtension()
     {
         // Arrange
-        var path = Path.Combine(_testFolder, "TestPage.wiki");
+        var path = Path.Combine(_testFolder, "wrong_extension_test.wiki");
         File.WriteAllText(path, "test");
 
         // Assert
@@ -39,7 +39,7 @@ public class ObsidianPageTests
     public void GetHeaders_ParsesMarkdownHeaders()
     {
         // Arrange
-        var path = Path.Combine(_testFolder, "HeaderTest.md");
+        var path = Path.Combine(_testFolder, "header_test.md");
         var content = @"# Main Header
 Some content
 ## Subheader
@@ -61,7 +61,7 @@ Some content
     public void GetLinks_ParsesWikiLinks()
     {
         // Arrange
-        var path = Path.Combine(_testFolder, "LinksTest.md");
+        var path = Path.Combine(_testFolder, "links_test.md");
         var content = "See [[Page One]] and [[Page Two|Display Text]] for more.";
         File.WriteAllText(path, content);
 
@@ -79,7 +79,7 @@ Some content
     public void GetTags_ParsesInlineTags()
     {
         // Arrange
-        var path = Path.Combine(_testFolder, "TagsTest.md");
+        var path = Path.Combine(_testFolder, "inline_tags_test.md");
         var content = "This page has #tag1 and #tag2 tags.";
         File.WriteAllText(path, content);
 
@@ -97,7 +97,7 @@ Some content
     public void GetTags_ParsesFrontmatterTags()
     {
         // Arrange
-        var path = Path.Combine(_testFolder, "FrontmatterTest.md");
+        var path = Path.Combine(_testFolder, "frontmatter_tags_test.md");
         var content = @"---
 tags: [example, test]
 ---
@@ -118,7 +118,7 @@ tags: [example, test]
     public void GetTags_CombinesFrontmatterAndInlineTags()
     {
         // Arrange
-        var path = Path.Combine(_testFolder, "CombinedTagsTest.md");
+        var path = Path.Combine(_testFolder, "combined_tags_test.md");
         var content = @"---
 tags: [frontmatter]
 ---
@@ -140,7 +140,7 @@ Content with #inline tag.";
     public void GetAliases_ParsesFrontmatterAliases()
     {
         // Arrange
-        var path = Path.Combine(_testFolder, "AliasTest.md");
+        var path = Path.Combine(_testFolder, "aliases_test.md");
         var content = @"---
 aliases: [""Alias One"", ""Alias Two""]
 ---
@@ -162,7 +162,7 @@ aliases: [""Alias One"", ""Alias Two""]
     public void GetContent_ReadsFileContent()
     {
         // Arrange
-        var path = Path.Combine(_testFolder, "ContentTest.md");
+        var path = Path.Combine(_testFolder, "content_test.md");
         var expected = "# Test\n\nSome content here.";
         File.WriteAllText(path, expected);
 

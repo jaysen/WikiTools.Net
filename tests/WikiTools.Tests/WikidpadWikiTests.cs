@@ -12,7 +12,7 @@ public class WikidpadWikiTests
 
     public WikidpadWikiTests()
     {
-        _testDir = Path.Combine(TestUtilities.SetTestFolder(),"wp");
+        _testDir = TestUtilities.GetTestFolder("wikidpad_wiki_tests");
         _dataDir = Path.Combine(_testDir, "data");
     }
 

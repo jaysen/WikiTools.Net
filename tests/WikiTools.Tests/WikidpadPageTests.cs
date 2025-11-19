@@ -7,11 +7,11 @@ namespace WikiTools.Tests;
 
 public class WikidpadPageTests
 {
-    private static string _testFolder;
+    private readonly string _testFolder;
 
     public WikidpadPageTests()
     {
-        _testFolder = TestUtilities.SetTestFolder();
+        _testFolder = TestUtilities.GetTestFolder("wikidpad_page_tests");
     }
 
     [Fact]
@@ -28,7 +28,7 @@ public class WikidpadPageTests
     public void Constructor_ThrowsIfWrongExtension()
     {
         //arrange
-        var path = Path.Combine(_testFolder, "TestPage.md");
+        var path = Path.Combine(_testFolder, "wrong_extension_test.md");
         File.Create(path);
 
         //assert
@@ -39,7 +39,7 @@ public class WikidpadPageTests
     public void GetPageContent_ReadSimpleText()
     {
         //arrange
-        var path = Path.Combine(_testFolder, "SimpleRead.wiki");
+        var path = Path.Combine(_testFolder, "simple_read_test.wiki");
         var expected = "test1";
         File.WriteAllText(path, expected);
 

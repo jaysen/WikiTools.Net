@@ -7,15 +7,15 @@ namespace WikiTools.Tests;
 
 public class WikidPadToObsidianConverterTests
 {
-    private readonly string _testDir;
+    private readonly string _testFolder;
     private readonly string _sourceDir;
     private readonly string _destDir;
 
     public WikidPadToObsidianConverterTests()
     {
-        _testDir = TestUtilities.SetTestFolder();
-        _sourceDir = Path.Combine(_testDir, "wp_source");
-        _destDir = Path.Combine(_testDir, "obsidian_dest");
+        _testFolder = TestUtilities.GetTestFolder("wikidpad_converter_tests");
+        _sourceDir = Path.Combine(_testFolder, "source");
+        _destDir = Path.Combine(_testFolder, "dest");
     }
 
     [Fact]
@@ -143,7 +143,7 @@ public class WikidPadToObsidianConverterTests
         var result = converter.ConvertContent(content);
 
         // Assert
-        Assert.Contains("[[Link With Spaces]]", result);
+        Assert.Contains("See [[Link With Spaces]] for more", result);
     }
 
     [Fact]
@@ -173,8 +173,8 @@ More details with bare CamelCase words.";
         Assert.Contains("### Details", result);
         Assert.Contains("[[WikiLink]]", result);
         Assert.Contains("[[Another Link]]", result);
-        Assert.Contains("[[Already Done]]", result);
-        Assert.Contains("[[CamelCase]]", result);
+        Assert.Contains("and [[Already Done]].", result);
+        Assert.Contains("with bare [[CamelCase]] words", result);
         Assert.Contains("#testing", result);
         Assert.Contains("#Example", result);
     }
@@ -253,11 +253,98 @@ More details with bare CamelCase words.";
     public void Constructor_ThrowsWhenSourceNotFound()
     {
         // Arrange
-        var nonExistentPath = Path.Combine(_testDir, "does_not_exist");
+        var nonExistentPath = Path.Combine(_testFolder, "does_not_exist");
 
         // Act & Assert
         Assert.Throws<DirectoryNotFoundException>(() =>
             new WikidPadToObsidianConverter(nonExistentPath, _destDir));
+    }
+
+    [Fact]
+    public void ConvertLinks_WikiLinksTestFile_ConvertsAllLinkTypes()
+    {
+        // Arrange
+        var content = @"+ WikiLinks Test Page
+
+++ Bare WikiWords (CamelCase)
+
+WikiWord HomePage ProjectNotes MultipleWikiWords
+What does it do for AbC, and ABc, or For ABC ?
+
+++ Single Bracket Links
+
+[Link with Spaces]
+[Another Link]
+[lowercase]
+[123numbers]
+
+++ Already Formatted Links
+
+should not effect : [[Already Formatted]] .
+should not effect : [[Another One]] ..
+
+++ Mixed Content
+
+[single bracket]
+[[double bracket]]
+
+++ Tags and Categories
+
+Some text with [tag:example] and also a CategoryTest entry.
+";
+
+        var converter = CreateConverter();
+
+        // Act
+        var result = converter.ConvertContent(content);
+
+        // Output for debugging
+        Console.WriteLine("=== CONVERTED OUTPUT ===");
+        Console.WriteLine(result);
+        Console.WriteLine("=== END OUTPUT ===");
+
+        // Assert - Headers (note: WikiLinks is converted to [[WikiLinks]])
+        Assert.Contains("# [[WikiLinks]] Test Page", result);
+        Assert.Contains("## Bare [[WikiWords]] ([[CamelCase]])", result);
+        Assert.Contains("## Single Bracket Links", result);
+        Assert.Contains("## Already Formatted Links", result);
+        Assert.Contains("## Mixed Content", result);
+        Assert.Contains("## Tags and Categories", result);
+
+        // Assert - Bare WikiWords should be converted to [[WikiWord]]
+        Assert.Contains("[[WikiWord]]", result);
+        Assert.Contains("[[HomePage]]", result);
+        Assert.Contains("[[ProjectNotes]]", result);
+        Assert.Contains("[[MultipleWikiWords]]", result);
+
+        // Assert - Single bracket links should be converted to [[double brackets]]
+        Assert.Contains("[[Link with Spaces]]", result);
+        Assert.Contains("[[Another Link]]", result);
+        Assert.Contains("[[lowercase]]", result);
+        Assert.Contains("[[123numbers]]", result);
+
+        // Assert - Already formatted links should remain unchanged
+        Assert.Contains("should not effect : [[Already Formatted]] .", result);
+        Assert.Contains("should not effect : [[Another One]] ..", result);
+
+        // Assert - Should NOT have any single bracket links remaining (except original input)
+        // Count occurrences - the result should have fewer single brackets than input
+        var inputSingleBrackets = System.Text.RegularExpressions.Regex.Matches(content, @"(?<!\[)\[(?!\[)").Count;
+        var outputSingleBrackets = System.Text.RegularExpressions.Regex.Matches(result, @"(?<!\[)\[(?!\[)").Count;
+        Assert.True(outputSingleBrackets < inputSingleBrackets,
+            $"Expected fewer single brackets in output. Input: {inputSingleBrackets}, Output: {outputSingleBrackets}");
+
+        // Assert - Already formatted links should remain unchanged
+        Assert.Contains("[[Already Formatted]]", result);
+        Assert.Contains("[[Another One]]", result);
+
+        // Assert - Mixed content should all be converted
+        Assert.Contains("[[single bracket]]", result);
+        Assert.Contains("[[double bracket]]", result);
+
+        // Assert - Tags should be converted
+        Assert.Contains("#example", result);
+        Assert.Contains("#Test", result);
     }
 
     private WikidPadToObsidianConverter CreateConverter()

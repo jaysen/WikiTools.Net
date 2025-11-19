@@ -1,12 +1,11 @@
 ﻿using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace WikiTools.Tests
 {
     public static class TestUtilities
     {
-        internal static DirectoryInfo TryGetSolutionDirectoryInfo(string currentPath = null)
+        private static DirectoryInfo TryGetSolutionDirectoryInfo(string currentPath = null)
         {
             var directory = new DirectoryInfo(
                 currentPath ?? Directory.GetCurrentDirectory());
@@ -17,12 +16,17 @@ namespace WikiTools.Tests
             return directory;
         }
 
-        internal static string SetTestFolder()
+        internal static string GetTestDataRoot()
         {
-            var solutionPath = TestUtilities.TryGetSolutionDirectoryInfo();
-            var dataFolder = Path.Combine(solutionPath.FullName, @"test_data");
-            Directory.CreateDirectory(dataFolder);
-            return dataFolder;
+            var solutionPath = TryGetSolutionDirectoryInfo();
+            return Path.Combine(solutionPath.FullName, "test_data");
+        }
+
+        internal static string GetTestFolder(string folderName)
+        {
+            var testFolder = Path.Combine(GetTestDataRoot(), folderName);
+            Directory.CreateDirectory(testFolder);
+            return testFolder;
         }
     }
 }

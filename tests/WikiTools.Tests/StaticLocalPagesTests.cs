@@ -6,22 +6,22 @@ namespace WikiTools.Tests;
 
 public class StaticLocalPagesTests
 {
-    private static string _testFolder;
+    private readonly string _testFolder;
 
-        
+
     public StaticLocalPagesTests()
     {
-        _testFolder = TestUtilities.SetTestFolder();
+        _testFolder = TestUtilities.GetTestFolder("local_pages_tests");
     }
 
     [Fact]
     public void GetPageContent_ReadSimpleText()
     {
         //arrange
-        var path = Path.Combine(_testFolder, "SimpleRead.wiki");
+        var path = Path.Combine(_testFolder, "simple_read_test.wiki");
         var expected = "test1";
         File.WriteAllText(path, expected);
-            
+
         //actual
         var actual = LocalPages.GetPageContent(path);
 
@@ -45,14 +45,14 @@ public class StaticLocalPagesTests
     public void ContainsText_ReturnsCorrectly(string searchStr, bool expected)
     {
         //arrange
-        var path = Path.Combine(_testFolder, "Test2.wiki");
+        var path = Path.Combine(_testFolder, "contains_text_test.wiki");
         using (var sw = File.CreateText(path))
         {
             sw.WriteLine("## MD Heading");
             sw.WriteLine("some text");
             sw.WriteLine("and a hashtag #test");
         }
-            
+
         //actual
         Assert.Equal(expected, LocalPages.ContainsText(path, searchStr));
     }
