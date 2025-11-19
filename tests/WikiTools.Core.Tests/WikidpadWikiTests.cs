@@ -21,6 +21,10 @@ public class WikidpadWikiTests
     public void Constructor_UsesRootWhenNoDataDir()
     {
         //arrange
+        if (!Directory.Exists(_testDir))
+        {
+            Directory.CreateDirectory(_testDir);
+        }
         if (Directory.Exists(_dataDir))
         {
             Directory.Delete(_dataDir, true);
