@@ -24,7 +24,7 @@ public class WikidpadWiki : LocalWiki
         var pages = new List<Page>();
         foreach (var file in files)
         {
-            pages.Add(new WikidpadPage(Path.Combine(DataDir, file)));
+            pages.Add(new WikidpadPage(file));
         }
         return pages;
     }
