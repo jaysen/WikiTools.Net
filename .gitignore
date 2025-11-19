@@ -368,3 +368,5 @@ FodyWeavers.xsd
 
 # Rider IDE settings
 /.idea/
+
+conversion_data/
