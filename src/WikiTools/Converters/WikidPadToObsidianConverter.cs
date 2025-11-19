@@ -67,9 +67,10 @@ public class WikidPadToObsidianConverter
         }
 
         // Apply conversions in order
+        // IMPORTANT: Tags must be converted before links to prevent [tag:...] from being treated as links
         content = ConvertHeaders(content);
-        content = ConvertLinks(content);
         content = ConvertTags(content);
+        content = ConvertLinks(content);
 
         return content;
     }
@@ -94,20 +95,35 @@ public class WikidPadToObsidianConverter
 
     /// <summary>
     /// Convert WikidPad links to Obsidian wikilinks
+    /// WikidPad syntax:
+    ///   - Bare CamelCase words (WikiWord) are auto-linked
+    ///   - [Single bracket] for links with spaces or non-CamelCase
+    /// Obsidian syntax:
+    ///   - [[Double brackets]] for all links
     /// </summary>
     private string ConvertLinks(string content)
     {
-        // Convert [WikiWord] to [[WikiWord]] (but don't double-convert [[already formatted]])
-        // Only convert CamelCase WikiWords
-        var wikiWordPattern = @"\[([A-Z][a-z]+(?:[A-Z][a-z]+)+)\]";
-        content = Regex.Replace(content, wikiWordPattern, match =>
+        // First: Convert [single bracket links] to [[double brackets]]
+        // This handles [Link with Spaces] and [any other text]
+        // Negative lookbehind (?<!\[) ensures we don't match [ in [[...]]
+        // Negative lookahead (?!\]) ensures we don't match ] in ...]]
+        var singleBracketPattern = @"(?<!\[)\[([^\]]+)\](?!\])";
+        content = Regex.Replace(content, singleBracketPattern, match =>
         {
-            // Check if it's already in double brackets by looking at context
             var linkText = match.Groups[1].Value;
             return $"[[{linkText}]]";
         });
 
-        // [[links with spaces]] are already in the correct format
+        // Second: Convert bare CamelCase WikiWords to [[WikiWord]]
+        // A WikiWord is CamelCase: starts with uppercase, at least one lowercase followed by uppercase
+        // Pattern: uppercase + lowercase(s) + (uppercase + lowercase(s))+
+        // Negative lookbehind (?<!\[) prevents matching if preceded by [
+        // Negative lookahead (?!\]) prevents matching if followed by ]
+        var camelCasePattern = @"(?<!\[)\b([A-Z][a-z]+(?:[A-Z][a-z]+)+)\b(?!\])";
+        content = Regex.Replace(content, camelCasePattern, match =>
+        {
+            return $"[[{match.Value}]]";
+        });
 
         return content;
     }

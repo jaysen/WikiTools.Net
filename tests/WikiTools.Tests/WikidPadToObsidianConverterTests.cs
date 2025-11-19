@@ -91,7 +91,35 @@ public class WikidPadToObsidianConverterTests
     }
 
     [Fact]
-    public void ConvertLinks_WikiWord_ToDoubleSquareBrackets()
+    public void ConvertLinks_BareCamelCase_ToDoubleSquareBrackets()
+    {
+        // Arrange
+        var content = "See WikiWord for more info";
+        var converter = CreateConverter();
+
+        // Act
+        var result = converter.ConvertContent(content);
+
+        // Assert
+        Assert.Contains("[[WikiWord]]", result);
+    }
+
+    [Fact]
+    public void ConvertLinks_SingleBracketLink_ToDoubleSquareBrackets()
+    {
+        // Arrange
+        var content = "See [Link with Spaces] for more info";
+        var converter = CreateConverter();
+
+        // Act
+        var result = converter.ConvertContent(content);
+
+        // Assert
+        Assert.Equal("See [[Link with Spaces]] for more info", result);
+    }
+
+    [Fact]
+    public void ConvertLinks_SingleBracketCamelCase_ToDoubleSquareBrackets()
     {
         // Arrange
         var content = "See [WikiWord] for more info";
@@ -124,7 +152,7 @@ public class WikidPadToObsidianConverterTests
         // Arrange
         var content = @"+ Test Page
 
-This is a test page with [WikiLink] and [[Another Link]].
+This is a test page with WikiLink, [Another Link], and [[Already Done]].
 
 ++ Subsection
 
@@ -132,7 +160,7 @@ Some content here [tag:testing] and CategoryExample.
 
 +++ Details
 
-More details.";
+More details with bare CamelCase words.";
 
         var converter = CreateConverter();
 
@@ -145,8 +173,26 @@ More details.";
         Assert.Contains("### Details", result);
         Assert.Contains("[[WikiLink]]", result);
         Assert.Contains("[[Another Link]]", result);
+        Assert.Contains("[[Already Done]]", result);
+        Assert.Contains("[[CamelCase]]", result);
         Assert.Contains("#testing", result);
         Assert.Contains("#Example", result);
+    }
+
+    [Fact]
+    public void ConvertLinks_DoesNotDoubleConvertAlreadyConverted()
+    {
+        // Arrange
+        var content = "See [[WikiWord]] and [[Another Link]]";
+        var converter = CreateConverter();
+
+        // Act
+        var result = converter.ConvertContent(content);
+
+        // Assert
+        Assert.Contains("[[WikiWord]]", result);
+        Assert.Contains("[[Another Link]]", result);
+        Assert.DoesNotContain("[[[", result); // No triple brackets
     }
 
     [Fact]

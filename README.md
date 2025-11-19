@@ -57,11 +57,13 @@ The converter handles the following WikidPad syntax:
 | WikidPad Format | Obsidian Format | Example |
 |----------------|-----------------|---------|
 | Headers | Markdown headers | `+ Header` → `# Header` |
-| WikiWords | Double brackets | `[WikiWord]` → `[[WikiWord]]` |
-| Spaced links | Already compatible | `[[Link]]` → `[[Link]]` |
+| Bare WikiWords | Double brackets | `WikiWord` → `[[WikiWord]]` |
+| Single bracket links | Double brackets | `[Link with Spaces]` → `[[Link with Spaces]]` |
 | Tags | Hashtags | `[tag:example]` → `#example` |
 | Categories | Hashtags | `CategoryName` → `#Name` |
 | File extension | Markdown | `.wiki` → `.md` |
+
+**Note:** WikidPad automatically links CamelCase words (WikiWords) without any brackets. Links with spaces or non-CamelCase text use single square brackets `[like this]`. The converter transforms both formats to Obsidian's double-bracket syntax `[[like this]]`.
 
 ### Library Usage
 
