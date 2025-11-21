@@ -11,10 +11,10 @@ public class WikidPadSyntaxTests
     #region LinkPattern Tests
 
     [Fact]
-    public void LinkPattern_MatchesDoubleBracketLinks()
+    public void LinkPattern_MatchesSingleBracketLinks()
     {
         // Arrange
-        var input = "[[Link with spaces]]";
+        var input = "[Link with spaces]";
 
         // Act
         var matches = _syntax.LinkPattern.Matches(input);
@@ -25,7 +25,7 @@ public class WikidPadSyntaxTests
     }
 
     [Fact]
-    public void LinkPattern_MatchesSingleBracketCamelCase()
+    public void LinkPattern_MatchesSingleBracketWord()
     {
         // Arrange
         var input = "[WikiWord]";
@@ -35,20 +35,50 @@ public class WikidPadSyntaxTests
 
         // Assert
         Assert.Equal(1, matches.Count);
-        Assert.Equal("WikiWord", matches[0].Groups[2].Value);
+        Assert.Equal("WikiWord", matches[0].Groups[1].Value);
     }
 
     [Fact]
-    public void LinkPattern_MatchesMultipleLinks()
+    public void LinkPattern_DoesNotMatchDoubleBrackets()
     {
         // Arrange
-        var input = "[[First Link]] and [SecondLink]";
+        // WikidPad does NOT use double brackets - that's Obsidian syntax
+        var input = "[[Not a WikidPad link]]";
+
+        // Act
+        var matches = _syntax.LinkPattern.Matches(input);
+
+        // Assert
+        Assert.Equal(0, matches.Count);
+    }
+
+    [Fact]
+    public void LinkPattern_DoesNotMatchBareCamelCase()
+    {
+        // Arrange
+        // Bare CamelCase links are matched by CamelCaseLinkPattern, not LinkPattern
+        var input = "WikiWord";
+
+        // Act
+        var matches = _syntax.LinkPattern.Matches(input);
+
+        // Assert
+        Assert.Equal(0, matches.Count);
+    }
+
+    [Fact]
+    public void LinkPattern_MatchesMultipleSingleBracketLinks()
+    {
+        // Arrange
+        var input = "[First Link] and [Second Link]";
 
         // Act
         var matches = _syntax.LinkPattern.Matches(input);
 
         // Assert
         Assert.Equal(2, matches.Count);
+        Assert.Equal("First Link", matches[0].Groups[1].Value);
+        Assert.Equal("Second Link", matches[1].Groups[1].Value);
     }
 
     #endregion

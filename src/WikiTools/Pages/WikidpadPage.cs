@@ -29,15 +29,19 @@ public class WikidpadPage : LocalPage
 
         // Use syntax pattern from parent wiki
         var syntax = (_wiki?.Syntax ?? new WikidPadSyntax()) as WikidPadSyntax;
-        var matches = syntax.LinkPattern.Matches(content);
 
-        foreach (Match match in matches)
+        // Match bracketed links: [link] or [Wiki Words]
+        var bracketedMatches = syntax.LinkPattern.Matches(content);
+        foreach (Match match in bracketedMatches)
         {
-            var link = match.Groups[1].Success ? match.Groups[1].Value : match.Groups[2].Value;
-            if (!string.IsNullOrEmpty(link))
-            {
-                links.Add(link);
-            }
+            links.Add(match.Groups[1].Value);
+        }
+
+        // Also match bare CamelCase WikiWords (not in brackets)
+        var camelCaseMatches = WikidPadSyntax.CamelCaseLinkPattern.Matches(content);
+        foreach (Match match in camelCaseMatches)
+        {
+            links.Add(match.Groups[1].Value);
         }
 
         return links;

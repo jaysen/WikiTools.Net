@@ -9,10 +9,12 @@ namespace WikiTools;
 public partial class WikidPadSyntax : WikiSyntax
 {
     /// <summary>
-    /// Pattern for matching WikidPad links: [[link with spaces]] or [WikiWord]
-    /// Note: This matches both double-bracket and single-bracket CamelCase links
+    /// Pattern for matching WikidPad bracketed links: [link] or [Wiki Words]
+    /// Note: WikidPad uses SINGLE brackets only (not double [[brackets]])
+    /// For bare CamelCase WikiWords without brackets, use CamelCaseLinkPattern
+    /// This pattern is the same as SingleBracketLinkPattern
     /// </summary>
-    [GeneratedRegex(@"\[\[([^\]]+)\]\]|\[([A-Z][a-z]+(?:[A-Z][a-z]+)+)\]")]
+    [GeneratedRegex(@"(?<!\[)\[([^\]]+)\](?!\])")]
     private static partial Regex LinkPatternRegex();
     public override Regex LinkPattern => LinkPatternRegex();
 
