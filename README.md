@@ -60,10 +60,38 @@ The converter handles the following WikidPad syntax:
 | Bare WikiWords | Double brackets | `WikiWord` → `[[WikiWord]]` |
 | Single bracket links | Double brackets | `[Link with Spaces]` → `[[Link with Spaces]]` |
 | Tags | Hashtags | `[tag:example]` → `#example` |
-| Categories | Hashtags | `CategoryName` → `#Name` |
+| Categories (opt-in) | Hashtags | `CategoryName` → `#Name` |
+| Attributes | Obsidian attributes | `[author: John]` → `[author:: John]` |
+| Aliases | YAML frontmatter | `[alias:Name]` → `aliases:` in frontmatter |
 | File extension | Markdown | `.wiki` → `.md` |
 
-**Note:** WikidPad automatically links CamelCase words (WikiWords) without any brackets. Links with spaces or non-CamelCase text use single square brackets `[like this]`. The converter transforms both formats to Obsidian's double-bracket syntax `[[like this]]`.
+**Notes:**
+- WikidPad automatically links CamelCase words (WikiWords) without any brackets. Links with spaces or non-CamelCase text use single square brackets `[like this]`. The converter transforms both formats to Obsidian's double-bracket syntax `[[like this]]`.
+- Only WikiWords starting with uppercase are converted (e.g., `WikiWord` but not `camelCase` or `iPhone`).
+- WikidPad special attributes like `[icon=date]` are preserved unchanged.
+- Category conversion is disabled by default. Enable with `--convert-categories` flag or `ConvertCategoryTags = true`.
+
+### Alias Conversion
+
+WikidPad aliases are converted to Obsidian YAML frontmatter:
+
+**Input (WikidPad):**
+```
+[alias:FirstAlias] [alias:SecondAlias]
++ My Page
+Content here
+```
+
+**Output (Obsidian):**
+```markdown
+---
+aliases:
+  - FirstAlias
+  - SecondAlias
+---
+# My Page
+Content here
+```
 
 ### Library Usage
 
@@ -80,6 +108,10 @@ var converter = new WikidPadToObsidianConverter(
     "/path/to/wikidpad",
     "/path/to/obsidian"
 );
+
+// Optional: Enable Category to hashtag conversion (disabled by default)
+converter.ConvertCategoryTags = true;
+
 converter.ConvertAll();
 ```
 
