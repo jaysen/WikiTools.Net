@@ -521,6 +521,32 @@ Some WikiWord and [single link]
         Assert.DoesNotContain("[tag::", result);
     }
 
+
+        [Fact]
+    public void ConvertContent_Attributes_DoesNotConvertToLinks()
+    {
+        // Arrange
+        var content = @"+ These are attributes
+[tag:important]
+[author::John] [key:value] [keyTwo:: valueTwo]
+Some WikiWord and [single link]
+[status: draft]";
+        var converter = CreateConverter();
+
+        // Act
+        var result = converter.ConvertContent(content);
+
+        // Assert
+        // attributes should not be converted to links
+        Assert.Contains("[author::John]", result);
+        Assert.Contains("[key:: value]", result);
+        Assert.Contains("[keyTwo:: valueTwo]", result);
+        Assert.DoesNotContain("[[author::John]]", result);
+        Assert.DoesNotContain("[[key::value]]", result);
+        Assert.DoesNotContain("[[keyTwo:: valueTwo]]", result);
+        Assert.DoesNotContain("[[status:: draft]]", result);
+    }
+
     private WikidPadToObsidianConverter CreateConverter()
     {
         Directory.CreateDirectory(_sourceDir);

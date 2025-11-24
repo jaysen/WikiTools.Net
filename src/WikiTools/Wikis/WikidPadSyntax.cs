@@ -30,8 +30,9 @@ public partial class WikidPadSyntax : WikiSyntax
     /// <summary>
     /// Pattern for matching single-bracket links: [link text]
     /// Uses negative lookbehind/lookahead to avoid matching [[ or ]]
+    /// Excludes content containing colons to avoid matching attributes [key: value]
     /// </summary>
-    [GeneratedRegex(@"(?<!\[)\[([^\]]+)\](?!\])")]
+    [GeneratedRegex(@"(?<!\[)\[([^\]:]+)\](?!\])")]
     private static partial Regex SingleBracketLinkPatternRegex();
     public static Regex SingleBracketLinkPattern => SingleBracketLinkPatternRegex();
 
@@ -64,8 +65,9 @@ public partial class WikidPadSyntax : WikiSyntax
     /// <summary>
     /// Pattern for matching WikidPad attributes: [key: value]
     /// Captures both the attribute name (key) and value
+    /// Uses negative lookahead to avoid matching already-converted [key:: value]
     /// </summary>
-    [GeneratedRegex(@"\[([a-zA-Z0-9_-]+):\s*([^\]]+)\]")]
+    [GeneratedRegex(@"\[([a-zA-Z0-9_-]+):(?!:)\s*([^\]]+)\]")]
     private static partial Regex AttributePatternRegex();
     public override Regex AttributePattern => AttributePatternRegex();
 }
