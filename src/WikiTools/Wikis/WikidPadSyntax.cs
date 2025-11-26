@@ -76,8 +76,9 @@ public partial class WikidPadSyntax : WikiSyntax
     /// Captures both the attribute name (key) and value
     /// Uses negative lookahead to avoid matching already-converted [key:: value]
     /// Excludes newlines to prevent matching malformed patterns (missing closing bracket)
+    /// Allows dots in key names (e.g., [list.sub: a])
     /// </summary>
-    [GeneratedRegex(@"\[([a-zA-Z0-9_-]+):(?!:)\s*([^\]\r\n]+)\]")]
+    [GeneratedRegex(@"\[([a-zA-Z0-9_.-]+):(?!:)\s*([^\]\r\n]+)\]")]
     private static partial Regex AttributePatternRegex();
     public override Regex AttributePattern => AttributePatternRegex();
 }

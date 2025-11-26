@@ -505,6 +505,21 @@ Some text with [tag:example] and also a CategoryTest entry.
     }
 
     [Fact]
+    public void ConvertAttributes_WithDots_ConvertsCorrectly()
+    {
+        // Arrange
+        var content = "[list.type: media] [key.with.dots: value]";
+        var converter = CreateConverter();
+
+        // Act
+        var result = converter.ConvertContent(content);
+
+        // Assert
+        Assert.Contains("[list.type:: media]", result);
+        Assert.Contains("[key.with.dots:: value]", result);
+    }
+
+    [Fact]
     public void ConvertAttributes_LongValue_PreservesSpaces()
     {
         // Arrange
