@@ -24,13 +24,23 @@ From your **host system** (Bazzite), navigate to the WikiTools.Net repository an
 
 ```bash
 cd ~/path/to/WikiTools.Net
-distrobox create --file .distrobox/distrobox.ini
+./.distrobox/create-container.sh
+```
+
+Or manually:
+
+```bash
+distrobox create \
+  --name wikitools-dev \
+  --image registry.fedoraproject.org/fedora-toolbox:40 \
+  --volume "$HOME/wikis:$HOME/wikis:rw" \
+  --yes
 ```
 
 This will create a Fedora-based container named `wikitools-dev` with:
-- .NET SDK 9.0
-- Required system dependencies for Avalonia UI
+- Fedora 40 base system
 - Access to your `~/wikis` directory
+- Shared display for GUI applications
 
 ### 2. Enter the Container
 
@@ -101,9 +111,9 @@ If you need to start fresh:
 # Delete container
 distrobox rm wikitools-dev
 
-# Recreate from config
+# Recreate
 cd ~/path/to/WikiTools.Net
-distrobox create --file .distrobox/distrobox.ini
+./.distrobox/create-container.sh
 
 # Enter and run setup again
 distrobox enter wikitools-dev
@@ -203,42 +213,47 @@ Alternatively, use VS Code's Remote - Containers extension (if available for dis
 
 ## Configuration Files
 
-- [.distrobox/distrobox.ini](.distrobox/distrobox.ini) - Container configuration
-- [.distrobox/setup.sh](.distrobox/setup.sh) - Post-creation setup script
+- [.distrobox/create-container.sh](../.distrobox/create-container.sh) - Container creation script
+- [.distrobox/setup.sh](../.distrobox/setup.sh) - Post-creation setup script (run inside container)
+- [.distrobox/distrobox.ini](../.distrobox/distrobox.ini) - Configuration reference (for distrobox 1.9.0+)
 
 ## Customization
 
 ### Adding More Packages
 
-Edit [.distrobox/distrobox.ini](.distrobox/distrobox.ini) and add to `additional_packages`:
+Edit [.distrobox/create-container.sh](../.distrobox/create-container.sh) to add packages, or install them manually after creation:
 
-```ini
-additional_packages="dotnet-sdk-9.0 dotnet-runtime-9.0 fontconfig liberation-fonts git tree YOUR_PACKAGE_HERE"
+```bash
+# Inside the container
+sudo dnf install YOUR_PACKAGE_HERE
 ```
-
-Then recreate the container.
 
 ### Mounting Additional Directories
 
-Add more volumes in [.distrobox/distrobox.ini](.distrobox/distrobox.ini):
+Edit [.distrobox/create-container.sh](../.distrobox/create-container.sh) and add more `--volume` flags:
 
-```ini
-volume=/path/on/host:/path/in/container:rw
+```bash
+distrobox create \
+  --name wikitools-dev \
+  --image registry.fedoraproject.org/fedora-toolbox:40 \
+  --volume "$HOME/wikis:$HOME/wikis:rw" \
+  --volume "/path/on/host:/path/in/container:rw" \
+  --yes
 ```
 
 ### Using Different Base Image
 
-Change the `image` line in [.distrobox/distrobox.ini](.distrobox/distrobox.ini):
+Edit [.distrobox/create-container.sh](../.distrobox/create-container.sh) and change the `--image` parameter:
 
-```ini
+```bash
 # For Ubuntu
-image=docker.io/library/ubuntu:24.04
+--image docker.io/library/ubuntu:24.04
 
 # For Arch
-image=docker.io/library/archlinux:latest
+--image docker.io/library/archlinux:latest
 ```
 
-Note: You'll need to adjust package installation commands in [setup.sh](.distrobox/setup.sh) for different distros.
+Note: You'll need to adjust package installation commands in [setup.sh](../.distrobox/setup.sh) for different distros.
 
 ## Benefits for WikiTools Development
 

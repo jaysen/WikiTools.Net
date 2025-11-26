@@ -20,8 +20,10 @@ A .NET library and CLI tool for working with various wiki formats, with support 
 For GUI development and testing on your actual wikis, use distrobox:
 
 ```bash
-# Create and enter container
-distrobox create --file .distrobox/distrobox.ini
+# Create container
+./.distrobox/create-container.sh
+
+# Enter container
 distrobox enter wikitools-dev
 
 # Run setup script

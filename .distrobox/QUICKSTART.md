@@ -4,7 +4,7 @@
 
 ```bash
 # 1. Create container (from host, in repo root)
-distrobox create --file .distrobox/distrobox.ini
+./.distrobox/create-container.sh
 
 # 2. Enter container
 distrobox enter wikitools-dev
@@ -16,6 +16,18 @@ cd ~/path/to/WikiTools.Net
 # 4. Build project
 dotnet restore
 dotnet build
+```
+
+### Alternative: Manual Container Creation
+
+If the script doesn't work, create manually:
+
+```bash
+distrobox create \
+  --name wikitools-dev \
+  --image registry.fedoraproject.org/fedora-toolbox:40 \
+  --volume "$HOME/wikis:$HOME/wikis:rw" \
+  --yes
 ```
 
 ## Daily Usage
@@ -57,7 +69,7 @@ distrobox start wikitools-dev
 distrobox rm wikitools-dev
 
 # Recreate container
-distrobox create --file .distrobox/distrobox.ini
+./.distrobox/create-container.sh
 ```
 
 ## Need More Help?
