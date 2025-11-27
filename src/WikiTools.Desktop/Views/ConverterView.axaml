@@ -26,8 +26,12 @@
                              Margin="0,0,10,0"/>
                     <Button Grid.Column="1"
                             Content="Browse..."
+                            Command="{Binding BrowseSourceCommand}"
                             MinWidth="100"/>
                 </Grid>
+                <TextBlock Text="{Binding SourcePathError}"
+                           Foreground="Red"
+                           IsVisible="{Binding SourcePathError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
             </StackPanel>
 
             <!-- Destination Folder -->
@@ -40,12 +44,13 @@
                              Margin="0,0,10,0"/>
                     <Button Grid.Column="1"
                             Content="Browse..."
+                            Command="{Binding BrowseDestinationCommand}"
                             MinWidth="100"/>
                 </Grid>
-
+                <TextBlock Text="{Binding DestinationPathError}"
+                           Foreground="Red"
+                           IsVisible="{Binding DestinationPathError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
             </StackPanel>
-
-
 
         </StackPanel>
 

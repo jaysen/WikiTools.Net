@@ -1,4 +1,5 @@
-﻿
+using WikiTools.Desktop.Services;
+
 namespace WikiTools.Desktop.ViewModels;
 
 public partial class MainWindowViewModel : ViewModelBase
@@ -7,6 +8,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
     public MainWindowViewModel()
     {
-        ConverterViewModel = new ConverterViewModel();
+        var folderPickerService = new FolderPickerService();
+        ConverterViewModel = new ConverterViewModel(folderPickerService);
     }
 }
