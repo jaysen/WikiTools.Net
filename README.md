@@ -1,6 +1,6 @@
 # WikiTools.Net
 
-A .NET library and CLI tool for working with various wiki formats, with support for converting between WikidPad and Obsidian.
+A .NET library, CLI tool, and desktop application for working with various wiki formats, with support for converting between WikidPad and Obsidian.
 
 ## Features
 
@@ -8,6 +8,7 @@ A .NET library and CLI tool for working with various wiki formats, with support 
 - **Obsidian Support**: Read and parse Obsidian `.md` files
 - **Format Conversion**: Convert WikidPad wikis to Obsidian format
 - **CLI Tool**: Command-line interface for easy conversions
+- **Desktop GUI**: Cross-platform Avalonia-based desktop application with visual converter interface
 
 ## Requirements
 
@@ -59,6 +60,25 @@ dotnet test
 ```
 
 ## Usage
+
+### Desktop Application
+
+Run the GUI application:
+
+```bash
+dotnet run --project src/WikiTools.Desktop
+```
+
+The desktop application provides a visual interface for converting WikidPad wikis to Obsidian format:
+
+- **Browse** for source WikidPad folder
+- **Browse** for destination Obsidian folder
+- **Options**: Toggle category tag conversion
+- **Convert** button to start the conversion
+- **Live progress** indicator during conversion
+- **Conversion log** showing results and any errors
+
+The GUI is built with Avalonia and runs cross-platform on Windows, Linux, and macOS.
 
 ### CLI Tool
 
@@ -157,7 +177,10 @@ WikiTools.Net/
 │   │   ├── Wikis/               # Wiki implementations
 │   │   └── Converters/          # Format converters
 │   ├── WikiTools.CLI/           # Command-line interface
-│   └── WikiTools.Desktop/       # Avalonia desktop GUI (in development)
+│   └── WikiTools.Desktop/       # Avalonia desktop GUI
+│       ├── Services/            # UI services (folder picker, etc.)
+│       ├── ViewModels/          # MVVM ViewModels
+│       └── Views/               # XAML views
 ├── tests/
 │   └── WikiTools.Tests/         # Unit tests
 ├── docs/                        # Documentation
