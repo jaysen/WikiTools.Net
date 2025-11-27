@@ -38,6 +38,9 @@ public partial class ConverterViewModel : ViewModelBase
     private string _statusMessage = "Ready to convert";
 
     [ObservableProperty]
+    private string _conversionLog = string.Empty;
+
+    [ObservableProperty]
     private string? _sourcePathError;
 
     [ObservableProperty]
@@ -123,25 +126,55 @@ public partial class ConverterViewModel : ViewModelBase
         {
             IsConverting = true;
             HasConversionResults = false;
+            ConversionLog = string.Empty;
             StatusMessage = "Starting conversion...";
+
+            var logBuilder = new StringBuilder();
+            logBuilder.AppendLine($"=== Conversion Started: {DateTime.Now:yyyy-MM-dd HH:mm:ss} ===");
+            logBuilder.AppendLine($"Source: {SourcePath}");
+            logBuilder.AppendLine($"Destination: {DestinationPath}");
+            logBuilder.AppendLine($"Convert Category Tags: {ConvertCategoryTags}");
+            logBuilder.AppendLine();
 
             await Task.Run(() =>
             {
-                var converter = new WikidPadToObsidianConverter(SourcePath, DestinationPath){};
+                var converter = new WikidPadToObsidianConverter(SourcePath, DestinationPath)
+                {
+                    ConvertCategoryTags = ConvertCategoryTags
+                };
+
+                logBuilder.AppendLine("Converting WikidPad files to Obsidian format...");
                 converter.ConvertAll();
+                logBuilder.AppendLine("Conversion completed successfully!");
             });
 
+            logBuilder.AppendLine();
+            logBuilder.AppendLine($"=== Conversion Finished: {DateTime.Now:yyyy-MM-dd HH:mm:ss} ===");
+
+            ConversionLog = logBuilder.ToString();
             StatusMessage = "Conversion completed successfully!";
             HasConversionResults = true;
         }
-        catch (DirectoryNotFoundException)
+        catch (DirectoryNotFoundException ex)
         {
+            var logBuilder = new StringBuilder();
+            logBuilder.AppendLine("ERROR: Directory not found");
+            logBuilder.AppendLine($"Message: {ex.Message}");
+            ConversionLog = logBuilder.ToString();
             StatusMessage = "Conversion failed - directory not found";
             HasConversionResults = true;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            StatusMessage = "Conversion failed - unexpected error";
+            var logBuilder = new StringBuilder();
+            logBuilder.AppendLine("ERROR: Conversion failed");
+            logBuilder.AppendLine($"Type: {ex.GetType().Name}");
+            logBuilder.AppendLine($"Message: {ex.Message}");
+            logBuilder.AppendLine();
+            logBuilder.AppendLine("Stack Trace:");
+            logBuilder.AppendLine(ex.StackTrace);
+            ConversionLog = logBuilder.ToString();
+            StatusMessage = "Conversion failed - see log for details";
             HasConversionResults = true;
         }
         finally
@@ -149,5 +182,6 @@ public partial class ConverterViewModel : ViewModelBase
             IsConverting = false;
         }
     }
+
 
 }

@@ -52,7 +52,12 @@
                            IsVisible="{Binding DestinationPathError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
             </StackPanel>
 
-
+            <!-- Options -->
+            <StackPanel Spacing="5">
+                <TextBlock Text="Options:" FontWeight="SemiBold"/>
+                <CheckBox Content="Convert Category Tags (CategoryName → #Name)"
+                          IsChecked="{Binding ConvertCategoryTags}"/>
+            </StackPanel>
 
             <!-- Convert Button -->
             <Button Content="Convert"
@@ -75,9 +80,32 @@
                 </StackPanel>
             </Border>
 
-
+            <!-- Separator -->
+            <Separator Margin="0,10"/>
         </StackPanel>
 
+        <!-- Results Panel (Fill remaining space) -->
+        <StackPanel Spacing="10" IsVisible="{Binding HasConversionResults}">
+            <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Grid.Column="0"
+                           Text="Conversion Log"
+                           FontSize="18"
+                           FontWeight="SemiBold"/>
+            </Grid>
 
+            <Border BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                    BorderThickness="1"
+                    CornerRadius="4">
+                <ScrollViewer MaxHeight="400"
+                              HorizontalScrollBarVisibility="Auto"
+                              VerticalScrollBarVisibility="Auto">
+                    <TextBox Text="{Binding ConversionLog}"
+                             IsReadOnly="True"
+                             TextWrapping="NoWrap"
+                             Background="Transparent"
+                             BorderThickness="0"/>
+                </ScrollViewer>
+            </Border>
+        </StackPanel>
     </DockPanel>
 </UserControl>
