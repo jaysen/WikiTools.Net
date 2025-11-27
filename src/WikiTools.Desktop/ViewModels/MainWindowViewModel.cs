@@ -1,6 +1,12 @@
-﻿namespace WikiTools.Desktop.ViewModels;
+﻿
+namespace WikiTools.Desktop.ViewModels;
 
 public partial class MainWindowViewModel : ViewModelBase
 {
-    public string Greeting { get; } = "Welcome to Avalonia!";
+    public ConverterViewModel ConverterViewModel { get; }
+
+    public MainWindowViewModel()
+    {
+        ConverterViewModel = new ConverterViewModel();
+    }
 }
