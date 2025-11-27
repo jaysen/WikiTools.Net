@@ -52,6 +52,30 @@
                            IsVisible="{Binding DestinationPathError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
             </StackPanel>
 
+
+
+            <!-- Convert Button -->
+            <Button Content="Convert"
+                    Command="{Binding ConvertCommand}"
+                    HorizontalAlignment="Left"
+                    MinWidth="150"
+                    Padding="20,10"
+                    FontSize="16"
+                    FontWeight="SemiBold"/>
+
+            <!-- Status Message -->
+            <Border Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
+                    Padding="10"
+                    CornerRadius="4"
+                    IsVisible="{Binding IsConverting}">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <TextBlock Text="⏳" FontSize="16"/>
+                    <TextBlock Text="{Binding StatusMessage}"
+                               FontWeight="SemiBold"/>
+                </StackPanel>
+            </Border>
+
+
         </StackPanel>
 
 

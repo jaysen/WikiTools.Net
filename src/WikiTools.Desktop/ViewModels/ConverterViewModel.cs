@@ -26,21 +26,41 @@ public partial class ConverterViewModel : ViewModelBase
     private string _destinationPath = string.Empty;
 
     [ObservableProperty]
+    private bool _convertCategoryTags = false;
+
+    [ObservableProperty]
+    private bool _isConverting = false;
+
+    [ObservableProperty]
+    private bool _hasConversionResults = false;
+
+    [ObservableProperty]
+    private string _statusMessage = "Ready to convert";
+
+    [ObservableProperty]
     private string? _sourcePathError;
 
     [ObservableProperty]
     private string? _destinationPathError;
-    
+
+    // Computed Property
+    public bool CanConvert => !string.IsNullOrWhiteSpace(SourcePath)
+                           && !string.IsNullOrWhiteSpace(DestinationPath)
+                           && !IsConverting
+                           && string.IsNullOrEmpty(SourcePathError)
+                           && string.IsNullOrEmpty(DestinationPathError);
 
     // Validation Partial Methods
     partial void OnSourcePathChanged(string value)
     {
         ValidateSourcePath(value);
+        ConvertCommand.NotifyCanExecuteChanged();
     }
 
     partial void OnDestinationPathChanged(string value)
     {
         ValidateDestinationPath(value);
+        ConvertCommand.NotifyCanExecuteChanged();
     }
 
     private void ValidateSourcePath(string path)
@@ -96,5 +116,38 @@ public partial class ConverterViewModel : ViewModelBase
         }
     }
 
+    [RelayCommand(CanExecute = nameof(CanConvert))]
+    private async Task ConvertAsync()
+    {
+        try
+        {
+            IsConverting = true;
+            HasConversionResults = false;
+            StatusMessage = "Starting conversion...";
+
+            await Task.Run(() =>
+            {
+                var converter = new WikidPadToObsidianConverter(SourcePath, DestinationPath){};
+                converter.ConvertAll();
+            });
+
+            StatusMessage = "Conversion completed successfully!";
+            HasConversionResults = true;
+        }
+        catch (DirectoryNotFoundException)
+        {
+            StatusMessage = "Conversion failed - directory not found";
+            HasConversionResults = true;
+        }
+        catch (Exception)
+        {
+            StatusMessage = "Conversion failed - unexpected error";
+            HasConversionResults = true;
+        }
+        finally
+        {
+            IsConverting = false;
+        }
+    }
 
 }
