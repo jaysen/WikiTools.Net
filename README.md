@@ -1,4 +1,4 @@
-# WikiTools.Net
+# WikiTool
 
 A .NET library, CLI tool, and desktop application for working with various wiki formats.
 
@@ -6,6 +6,7 @@ A .NET library, CLI tool, and desktop application for working with various wiki 
 
 - **WikidPad Support**: Read and parse WikidPad `.wiki` files
 - **Obsidian Support**: Read and parse Obsidian `.md` files
+- **Markdown Wiki Support**: Read and parse using Markdown links
 - **Format Conversion**: Convert between wikis - WikidPad to Obsidian done. 
 - **CLI Tool**: Command-line interface for easy conversions
 - **Desktop GUI**: Cross-platform Avalonia-based desktop application - Converter done
@@ -33,10 +34,7 @@ distrobox enter dotnetbox
 # Optional: Install VS Code inside container (recommended)
 ./.distrobox/install-vscode.sh
 ```
-
-The VS Code installation script installs VS Code inside the container and exports it to your host, giving you full access to .NET SDK and all development tools. You can then launch VS Code from your host and it will run inside the container automatically.
-
-See [docs/DISTROBOX_SETUP.md](docs/DISTROBOX_SETUP.md) or [.distrobox/QUICKSTART.md](.distrobox/QUICKSTART.md) for detailed instructions.
+The VS Code installation script installs VS Code inside the container and exports it to your host, giving you full access to .NET SDK and all development tools
 
 ### Option 2: DevContainer
 
