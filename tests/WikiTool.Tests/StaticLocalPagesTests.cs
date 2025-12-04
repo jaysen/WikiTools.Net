@@ -1,5 +1,6 @@
 using System.IO;
 using WikiTool;
+using WikiTool.Pages;
 using Xunit;
 
 namespace WikiTool.Tests;

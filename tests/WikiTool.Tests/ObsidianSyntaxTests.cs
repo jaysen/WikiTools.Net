@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using WikiTool;
+using WikiTool.Wikis;
 using Xunit;
 
 namespace WikiTool.Tests;

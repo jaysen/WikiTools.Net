@@ -1,7 +1,6 @@
 using System.IO;
 
-namespace WikiTool;
-
+namespace WikiTool.Pages;
 public abstract class LocalPage : Page
 {
     public string PagePath { get; set; }

@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 
-namespace WikiTool;
+namespace WikiTool.Wikis;
+
 
 /// <summary>
 /// Defines the syntax patterns for a wiki format.

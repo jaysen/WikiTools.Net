@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using WikiTool;
+using WikiTool.Pages;
+using WikiTool.Wikis;
 using Xunit;
 
 namespace WikiTool.Tests;

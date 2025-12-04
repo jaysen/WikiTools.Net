@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using WikiTool.Wikis;
 
-namespace WikiTool;
+namespace WikiTool.Pages;
 
 public class WikidpadPage : LocalPage
 {

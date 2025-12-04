@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using WikiTool.Pages;
 
-namespace WikiTool;
+namespace WikiTool.Wikis;
+
 
 public class WikidpadWiki : LocalWiki
 {

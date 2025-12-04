@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 
-namespace WikiTool;
+namespace WikiTool.Wikis;
+
 
 /// <summary>
 /// Syntax patterns for Obsidian markdown format
