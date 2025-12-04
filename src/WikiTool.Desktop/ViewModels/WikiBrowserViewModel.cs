@@ -18,7 +18,10 @@ public partial class WikiBrowserViewModel : ViewModelBase
     public WikiBrowserViewModel(IFolderPickerService folderPickerService)
     {
         _folderPickerService = folderPickerService;
+        ConverterViewModel = new ConverterViewModel(folderPickerService);
     }
+
+    public ConverterViewModel ConverterViewModel { get; }
 
     [ObservableProperty]
     private string _wikiRootPath = string.Empty;
@@ -41,6 +44,9 @@ public partial class WikiBrowserViewModel : ViewModelBase
     [ObservableProperty]
     private string _statusMessage = "No wiki folder selected";
 
+    [ObservableProperty]
+    private bool _isConverterDialogOpen;
+
     public bool HasWikiLoaded => !string.IsNullOrEmpty(WikiRootPath) && FolderTree.Count > 0;
 
     partial void OnSelectedNodeChanged(FolderTreeNode? value)
@@ -49,6 +55,26 @@ public partial class WikiBrowserViewModel : ViewModelBase
         {
             LoadPageContent(value);
         }
+    }
+
+    partial void OnWikiRootPathChanged(string value)
+    {
+        if (!string.IsNullOrEmpty(value) && Directory.Exists(value))
+        {
+            ConverterViewModel.SourcePath = value;
+        }
+    }
+
+    [RelayCommand]
+    private void OpenConverterDialog()
+    {
+        IsConverterDialogOpen = true;
+    }
+
+    [RelayCommand]
+    private void CloseConverterDialog()
+    {
+        IsConverterDialogOpen = false;
     }
 
     [RelayCommand]
