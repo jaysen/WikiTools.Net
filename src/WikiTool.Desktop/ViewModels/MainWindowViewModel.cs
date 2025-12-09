@@ -1,9 +1,12 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using WikiTool.Desktop.Services;
+using WikiTool.Desktop.Views;
 
 namespace WikiTool.Desktop.ViewModels;
 
@@ -68,5 +71,23 @@ public partial class MainWindowViewModel : ViewModelBase
 
         OnPropertyChanged(nameof(OpenTabsCount));
         OnPropertyChanged(nameof(HasOpenTabs));
+    }
+
+    [RelayCommand]
+    private async Task OpenCopyPagesWindowAsync()
+    {
+        if (Avalonia.Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        {
+            var mainWindow = desktop.MainWindow;
+            if (mainWindow != null)
+            {
+                var viewModel = new CopyPagesViewModel(WikiTabs);
+                var copyWindow = new CopyPagesWindow(viewModel)
+                {
+                    Icon = mainWindow.Icon
+                };
+                await copyWindow.ShowDialog(mainWindow);
+            }
+        }
     }
 }

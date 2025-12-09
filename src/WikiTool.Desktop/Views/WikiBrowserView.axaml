@@ -209,6 +209,10 @@
                                 <TextBlock Text="Tools"
                                            FontWeight="SemiBold"
                                            FontSize="14"/>
+                                <Button Content="Copy Pages..."
+                                        HorizontalAlignment="Stretch"
+                                        Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).OpenCopyPagesWindowCommand}"
+                                        ToolTip.Tip="Copy pages between wikis"/>
                                 <Button Content="Convert Wiki"
                                         HorizontalAlignment="Stretch"
                                         Command="{Binding OpenConverterDialogCommand}"
