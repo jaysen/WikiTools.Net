@@ -50,7 +50,27 @@ public partial class WikiBrowserViewModel : ViewModelBase
     [ObservableProperty]
     private string _tabTitle = "New Wiki";
 
+    [ObservableProperty]
+    private bool _isEditingTabTitle;
+
     public bool HasWikiLoaded => !string.IsNullOrEmpty(WikiRootPath) && FolderTree.Count > 0;
+
+    [RelayCommand]
+    private void StartEditingTabTitle()
+    {
+        IsEditingTabTitle = true;
+    }
+
+    [RelayCommand]
+    private void FinishEditingTabTitle()
+    {
+        IsEditingTabTitle = false;
+        // Ensure tab title is not empty
+        if (string.IsNullOrWhiteSpace(TabTitle))
+        {
+            TabTitle = string.IsNullOrEmpty(WikiRootPath) ? "New Wiki" : Path.GetFileName(WikiRootPath);
+        }
+    }
 
     partial void OnSelectedNodeChanged(FolderTreeNode? value)
     {
