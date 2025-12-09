@@ -47,7 +47,30 @@ public partial class WikiBrowserViewModel : ViewModelBase
     [ObservableProperty]
     private string _statusMessage = "No wiki folder selected";
 
+    [ObservableProperty]
+    private string _tabTitle = "New Wiki";
+
+    [ObservableProperty]
+    private bool _isEditingTabTitle;
+
     public bool HasWikiLoaded => !string.IsNullOrEmpty(WikiRootPath) && FolderTree.Count > 0;
+
+    [RelayCommand]
+    private void StartEditingTabTitle()
+    {
+        IsEditingTabTitle = true;
+    }
+
+    [RelayCommand]
+    private void FinishEditingTabTitle()
+    {
+        IsEditingTabTitle = false;
+        // Ensure tab title is not empty
+        if (string.IsNullOrWhiteSpace(TabTitle))
+        {
+            TabTitle = string.IsNullOrEmpty(WikiRootPath) ? "New Wiki" : Path.GetFileName(WikiRootPath);
+        }
+    }
 
     partial void OnSelectedNodeChanged(FolderTreeNode? value)
     {
@@ -112,7 +135,9 @@ public partial class WikiBrowserViewModel : ViewModelBase
                 FolderTree = new ObservableCollection<FolderTreeNode>(rootNode);
             });
 
-            StatusMessage = $"Loaded: {Path.GetFileName(path)}";
+            var folderName = Path.GetFileName(path);
+            TabTitle = string.IsNullOrEmpty(folderName) ? path : folderName;
+            StatusMessage = $"Loaded: {folderName}";
             OnPropertyChanged(nameof(HasWikiLoaded));
         }
         catch (Exception ex)
