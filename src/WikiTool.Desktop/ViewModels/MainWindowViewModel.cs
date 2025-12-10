@@ -81,7 +81,11 @@ public partial class MainWindowViewModel : ViewModelBase
             var mainWindow = desktop.MainWindow;
             if (mainWindow != null)
             {
-                var viewModel = new CopyPagesViewModel(WikiTabs);
+                var viewModel = new CopyPagesViewModel(
+                    WikiTabs,
+                    _folderPickerService,
+                    SelectedTab,
+                    OpenFolderAsNewTab);
                 var copyWindow = new CopyPagesWindow(viewModel)
                 {
                     Icon = mainWindow.Icon
@@ -89,5 +93,15 @@ public partial class MainWindowViewModel : ViewModelBase
                 await copyWindow.ShowDialog(mainWindow);
             }
         }
+    }
+
+    private async void OpenFolderAsNewTab(string folderPath)
+    {
+        var newTab = new WikiBrowserViewModel(_folderPickerService);
+        WikiTabs.Add(newTab);
+        SelectedTab = newTab;
+        await newTab.LoadWikiFolderAsync(folderPath);
+        OnPropertyChanged(nameof(OpenTabsCount));
+        OnPropertyChanged(nameof(HasOpenTabs));
     }
 }

@@ -7,7 +7,7 @@
         mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="700"
         x:Class="WikiTool.Desktop.Views.CopyPagesWindow"
         x:DataType="vm:CopyPagesViewModel"
-        Title="Copy Pages Between Wikis"
+        Title="Copy Pages"
         Width="900"
         Height="700"
         MinWidth="700"
@@ -25,7 +25,7 @@
                 BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
                 BorderThickness="0,0,0,1">
             <StackPanel Spacing="15">
-                <!-- Wiki Selection -->
+                <!-- Source Wiki and Destination Folder Selection -->
                 <Grid ColumnDefinitions="*,20,*" RowDefinitions="Auto,Auto">
                     <!-- Source Wiki -->
                     <StackPanel Grid.Column="0" Grid.Row="0" Spacing="5">
@@ -49,19 +49,21 @@
                                HorizontalAlignment="Center"
                                VerticalAlignment="Center"/>
 
-                    <!-- Target Wiki -->
+                    <!-- Destination Folder -->
                     <StackPanel Grid.Column="2" Grid.Row="0" Spacing="5">
-                        <TextBlock Text="Target Wiki"
+                        <TextBlock Text="Destination Folder"
                                    FontWeight="SemiBold"/>
-                        <ComboBox ItemsSource="{Binding AvailableTargetWikis}"
-                                  SelectedItem="{Binding TargetWiki}"
-                                  HorizontalAlignment="Stretch">
-                            <ComboBox.ItemTemplate>
-                                <DataTemplate x:DataType="vm:WikiBrowserViewModel">
-                                    <TextBlock Text="{Binding TabTitle}"/>
-                                </DataTemplate>
-                            </ComboBox.ItemTemplate>
-                        </ComboBox>
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBox Grid.Column="0"
+                                     Text="{Binding DestinationFolderDisplay}"
+                                     IsReadOnly="True"
+                                     Watermark="Select a destination folder..."/>
+                            <Button Grid.Column="1"
+                                    Content="Browse..."
+                                    Command="{Binding BrowseDestinationFolderCommand}"
+                                    Margin="5,0,0,0"
+                                    Padding="10,5"/>
+                        </Grid>
                     </StackPanel>
                 </Grid>
 
@@ -71,6 +73,8 @@
                               IsChecked="{Binding PreserveFolderStructure}"/>
                     <CheckBox Content="Overwrite existing files"
                               IsChecked="{Binding OverwriteExisting}"/>
+                    <CheckBox Content="Open destination as new tab after copy"
+                              IsChecked="{Binding OpenDestinationAsTab}"/>
                 </StackPanel>
             </StackPanel>
         </Border>

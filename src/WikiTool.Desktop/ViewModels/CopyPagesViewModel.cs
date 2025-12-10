@@ -7,18 +7,21 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using WikiTool.Desktop.Models;
+using WikiTool.Desktop.Services;
 
 namespace WikiTool.Desktop.ViewModels;
 
 public partial class CopyPagesViewModel : ViewModelBase
 {
-    private readonly ObservableCollection<WikiBrowserViewModel> _availableWikis;
+    private readonly ObservableCollection<WikiBrowserViewModel> _wikiTabs;
+    private readonly IFolderPickerService _folderPickerService;
+    private readonly Action<string>? _openFolderAsTabCallback;
 
     [ObservableProperty]
     private WikiBrowserViewModel? _sourceWiki;
 
     [ObservableProperty]
-    private WikiBrowserViewModel? _targetWiki;
+    private string? _destinationFolder;
 
     [ObservableProperty]
     private ObservableCollection<SelectablePageNode> _selectablePages = [];
@@ -38,16 +41,33 @@ public partial class CopyPagesViewModel : ViewModelBase
     [ObservableProperty]
     private bool _overwriteExisting;
 
-    public CopyPagesViewModel(ObservableCollection<WikiBrowserViewModel> availableWikis)
+    [ObservableProperty]
+    private bool _openDestinationAsTab;
+
+    public CopyPagesViewModel(
+        ObservableCollection<WikiBrowserViewModel> wikiTabs,
+        IFolderPickerService folderPickerService,
+        WikiBrowserViewModel? currentWiki = null,
+        Action<string>? openFolderAsTabCallback = null)
     {
-        _availableWikis = availableWikis;
+        _wikiTabs = wikiTabs;
+        _folderPickerService = folderPickerService;
+        _openFolderAsTabCallback = openFolderAsTabCallback;
+
+        // Auto-select current wiki as source
+        if (currentWiki != null && currentWiki.HasWikiLoaded)
+        {
+            SourceWiki = currentWiki;
+        }
     }
 
     public IEnumerable<WikiBrowserViewModel> AvailableSourceWikis =>
-        _availableWikis.Where(w => w.HasWikiLoaded);
+        _wikiTabs.Where(w => w.HasWikiLoaded);
 
-    public IEnumerable<WikiBrowserViewModel> AvailableTargetWikis =>
-        _availableWikis.Where(w => w.HasWikiLoaded && w != SourceWiki);
+    public bool HasDestinationFolder => !string.IsNullOrEmpty(DestinationFolder);
+
+    public string DestinationFolderDisplay =>
+        string.IsNullOrEmpty(DestinationFolder) ? "No folder selected" : DestinationFolder;
 
     partial void OnSourceWikiChanged(WikiBrowserViewModel? value)
     {
@@ -59,11 +79,13 @@ public partial class CopyPagesViewModel : ViewModelBase
         {
             SelectablePages.Clear();
         }
-        OnPropertyChanged(nameof(AvailableTargetWikis));
+        UpdateStatusMessage();
     }
 
-    partial void OnTargetWikiChanged(WikiBrowserViewModel? value)
+    partial void OnDestinationFolderChanged(string? value)
     {
+        OnPropertyChanged(nameof(HasDestinationFolder));
+        OnPropertyChanged(nameof(DestinationFolderDisplay));
         UpdateStatusMessage();
     }
 
@@ -132,13 +154,23 @@ public partial class CopyPagesViewModel : ViewModelBase
         {
             StatusMessage = "Select a source wiki";
         }
-        else if (TargetWiki == null)
+        else if (string.IsNullOrEmpty(DestinationFolder))
         {
-            StatusMessage = $"{SelectedPageCount} pages selected. Select a target wiki.";
+            StatusMessage = $"{SelectedPageCount} pages selected. Select a destination folder.";
         }
         else
         {
-            StatusMessage = $"Ready to copy {SelectedPageCount} pages from '{SourceWiki.TabTitle}' to '{TargetWiki.TabTitle}'";
+            StatusMessage = $"Ready to copy {SelectedPageCount} pages to '{Path.GetFileName(DestinationFolder)}'";
+        }
+    }
+
+    [RelayCommand]
+    private async Task BrowseDestinationFolderAsync()
+    {
+        var folder = await _folderPickerService.PickFolderAsync("Select Destination Folder");
+        if (!string.IsNullOrEmpty(folder))
+        {
+            DestinationFolder = folder;
         }
     }
 
@@ -168,7 +200,7 @@ public partial class CopyPagesViewModel : ViewModelBase
     [RelayCommand]
     private async Task CopyPagesAsync()
     {
-        if (SourceWiki == null || TargetWiki == null || SelectedPageCount == 0)
+        if (SourceWiki == null || string.IsNullOrEmpty(DestinationFolder) || SelectedPageCount == 0)
         {
             return;
         }
@@ -190,8 +222,11 @@ public partial class CopyPagesViewModel : ViewModelBase
 
             StatusMessage = $"Successfully copied {copiedCount} pages!";
 
-            // Refresh target wiki to show new files
-            await TargetWiki.LoadWikiFolderAsync(TargetWiki.WikiRootPath);
+            // Open destination folder as a new tab if requested
+            if (OpenDestinationAsTab && _openFolderAsTabCallback != null)
+            {
+                _openFolderAsTabCallback(DestinationFolder);
+            }
         }
         catch (Exception ex)
         {
@@ -221,7 +256,7 @@ public partial class CopyPagesViewModel : ViewModelBase
 
     private async Task CopyPageAsync(SelectablePageNode page)
     {
-        if (SourceWiki == null || TargetWiki == null)
+        if (SourceWiki == null || string.IsNullOrEmpty(DestinationFolder))
         {
             return;
         }
@@ -232,14 +267,14 @@ public partial class CopyPagesViewModel : ViewModelBase
         if (PreserveFolderStructure)
         {
             // Preserve folder structure
-            var targetFolder = Path.Combine(TargetWiki.WikiRootPath, page.RelativePath);
+            var targetFolder = Path.Combine(DestinationFolder, page.RelativePath);
             Directory.CreateDirectory(targetFolder);
             targetFile = Path.Combine(targetFolder, page.FolderTreeNode.Name);
         }
         else
         {
-            // Copy to root of target wiki
-            targetFile = Path.Combine(TargetWiki.WikiRootPath, page.FolderTreeNode.Name);
+            // Copy to root of destination folder
+            targetFile = Path.Combine(DestinationFolder, page.FolderTreeNode.Name);
         }
 
         if (File.Exists(targetFile) && !OverwriteExisting)
