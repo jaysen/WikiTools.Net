@@ -1,9 +1,12 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using WikiTool.Desktop.Services;
+using WikiTool.Desktop.Views;
 
 namespace WikiTool.Desktop.ViewModels;
 
@@ -66,6 +69,38 @@ public partial class MainWindowViewModel : ViewModelBase
             SelectedTab = WikiTabs[index];
         }
 
+        OnPropertyChanged(nameof(OpenTabsCount));
+        OnPropertyChanged(nameof(HasOpenTabs));
+    }
+
+    [RelayCommand]
+    private async Task OpenCopyPagesWindowAsync()
+    {
+        if (Avalonia.Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        {
+            var mainWindow = desktop.MainWindow;
+            if (mainWindow != null)
+            {
+                var viewModel = new CopyPagesViewModel(
+                    WikiTabs,
+                    _folderPickerService,
+                    SelectedTab,
+                    OpenFolderAsNewTab);
+                var copyWindow = new CopyPagesWindow(viewModel)
+                {
+                    Icon = mainWindow.Icon
+                };
+                await copyWindow.ShowDialog(mainWindow);
+            }
+        }
+    }
+
+    private async void OpenFolderAsNewTab(string folderPath)
+    {
+        var newTab = new WikiBrowserViewModel(_folderPickerService);
+        WikiTabs.Add(newTab);
+        SelectedTab = newTab;
+        await newTab.LoadWikiFolderAsync(folderPath);
         OnPropertyChanged(nameof(OpenTabsCount));
         OnPropertyChanged(nameof(HasOpenTabs));
     }
